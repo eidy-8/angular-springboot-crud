@@ -8,4 +8,5 @@ import com.eidy_8.server.entities.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
+	boolean existsByEmail(String email);
 }
