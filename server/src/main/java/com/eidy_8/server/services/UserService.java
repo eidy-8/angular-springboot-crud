@@ -76,7 +76,7 @@ public class UserService {
     
     public void deleteById(UUID id) {
     	
-    	User user = repository.findById(id).orElseThrow(UserNotFoundException::new);
+    	User user = repository.findByIdAndDeletedAtIsNull(id).orElseThrow(UserNotFoundException::new);
     	
     	user.setDeletedAt(LocalDateTime.now());
     	
