@@ -35,8 +35,8 @@ public class UserController {
     @GetMapping
     public Page<UserResponse> findAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return userService.findAll(page, size);
+            @RequestParam(defaultValue = "10") int pageSize) {
+        return userService.findAll(page, pageSize);
     }
     
     @GetMapping("/{id}")

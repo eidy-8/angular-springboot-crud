@@ -28,9 +28,9 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
     
-    public Page<UserResponse> findAll(int page, int size) {
+    public Page<UserResponse> findAll(int page, int pageSize) {
     	
-        return repository.findByDeletedAtIsNull(PageRequest.of(page, size))
+        return repository.findByDeletedAtIsNull(PageRequest.of(page, pageSize))
                 .map(this::toResponse);
     }
     

@@ -11,9 +11,11 @@ import com.eidy_8.server.entities.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 	
-	Page<User> findByDeletedAtIsNull(Pageable pageable);
+	boolean existsByEmail(String email);
+	
+	Optional<User> findByEmailAndDeletedAtIsNull(String email);
 	
 	Optional<User> findByIdAndDeletedAtIsNull(UUID id);
-
-	boolean existsByEmail(String email);
+	
+	Page<User> findByDeletedAtIsNull(Pageable pageable);
 }
