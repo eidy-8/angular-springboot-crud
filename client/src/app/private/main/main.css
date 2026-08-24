@@ -1,0 +1,26 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.profile-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+  padding: 12px 16px;
+}
+
+.profile-summary strong {
+  font-size: 14px;
+}
+
+.profile-summary span {
+  color: #5f6368;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}

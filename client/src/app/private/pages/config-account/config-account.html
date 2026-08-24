@@ -1,0 +1,40 @@
+<div class="example-container">
+    <mat-card class="example-card" appearance="outlined">
+        <mat-card-header>
+            <mat-card-title>Alterar dados da conta</mat-card-title>
+        </mat-card-header>
+
+        <br>
+        
+        <form class="form" [formGroup]="updateForm" (ngSubmit)="update()">
+            <mat-form-field>
+                <mat-label>Digite um nome</mat-label>
+                <input
+                matInput
+                [formControl]="username"
+                (blur)="updateUsernameErrorMessage()"
+                required
+                />
+                @if (username.invalid) {
+                <mat-error>{{usernameErrorMessage()}}</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Digite um email</mat-label>
+                <input
+                matInput
+                [formControl]="email"
+                (blur)="updateEmailErrorMessage()"
+                required
+                />
+                @if (email.invalid) {
+                <mat-error>{{emailErrorMessage()}}</mat-error>
+                }
+            </mat-form-field>
+    
+            <button type="submit" matButton="filled">Alterar</button>
+        </form>
+
+    </mat-card>
+</div>

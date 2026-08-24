@@ -1,0 +1,94 @@
+<main class="dashboard-shell">
+	<header class="dashboard-header">
+		<div>
+			<p class="eyebrow">VISÃO GERAL <span></span> 24 AGO 2026</p>
+			<h1>Olá, <em>Admin.</em></h1>
+			<p class="subtitle">Aqui está o que está acontecendo no seu negócio hoje.</p>
+		</div>
+
+		<button mat-stroked-button class="date-button">
+			<mat-icon>calendar_today</mat-icon>
+			Últimos 30 dias
+			<mat-icon>expand_more</mat-icon>
+		</button>
+	</header>
+
+	<section class="metric-grid" aria-label="Indicadores principais">
+		@for (metric of metrics; track metric.label) {
+			<article class="metric-card">
+				<div class="metric-topline">
+					<span class="metric-icon" [class]="metric.tone"><mat-icon>{{ metric.icon }}</mat-icon></span>
+					<span class="trend" [class.negative]="metric.trend === 'down'">
+						<mat-icon>{{ metric.trend === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
+						{{ metric.change }}
+					</span>
+				</div>
+				<p>{{ metric.label }}</p>
+				<strong>{{ metric.value }}</strong>
+				<span class="comparison">vs. período anterior</span>
+			</article>
+		}
+	</section>
+
+	<section class="content-grid">
+		<article class="panel chart-panel">
+			<div class="panel-heading">
+				<div>
+					<p class="panel-kicker">DESEMPENHO</p>
+					<h2>Receita ao longo do tempo</h2>
+				</div>
+				<span class="chart-total">R$ 48.290 <small>+12,8%</small></span>
+			</div>
+			<div class="chart-area" aria-label="Gráfico de receita dos últimos oito meses">
+				<div class="chart-axis"><span>R$ 12k</span><span>R$ 8k</span><span>R$ 4k</span><span>R$ 0</span></div>
+				<div class="bars">
+					@for (item of sales; track item.month) {
+						<div class="bar-column">
+							<div class="bar" [style.height.%]="item.value"><span>R$ {{ item.value * 120 }}</span></div>
+							<small>{{ item.month }}</small>
+						</div>
+					}
+				</div>
+			</div>
+		</article>
+
+		<article class="panel goal-panel">
+			<div class="panel-heading">
+				<div>
+					<p class="panel-kicker">META MENSAL</p>
+					<h2>Objetivo de agosto</h2>
+				</div>
+				<button mat-icon-button aria-label="Mais opções"><mat-icon>more_horiz</mat-icon></button>
+			</div>
+			<div class="goal-ring"><div><strong>78%</strong><span>alcançado</span></div></div>
+			<div class="goal-values"><span><b>R$ 48.290</b><small>realizado</small></span><span><b>R$ 62.000</b><small>objetivo</small></span></div>
+			<p class="goal-note"><mat-icon>bolt</mat-icon> Faltam R$ 13.710 para bater a meta</p>
+		</article>
+	</section>
+
+	<section class="lower-grid">
+		<article class="panel activity-panel">
+			<div class="panel-heading">
+				<div><p class="panel-kicker">EM TEMPO REAL</p><h2>Atividade recente</h2></div>
+				<button mat-button class="view-all">Ver tudo <mat-icon>arrow_forward</mat-icon></button>
+			</div>
+			<div class="activity-list">
+				@for (activity of activities; track activity.name) {
+					<div class="activity-row">
+						<span class="avatar" [class]="activity.tone">{{ activity.initials }}</span>
+						<p><b>{{ activity.name }}</b> {{ activity.action }}<small>{{ activity.time }}</small></p>
+						<mat-icon class="activity-arrow">chevron_right</mat-icon>
+					</div>
+				}
+			</div>
+		</article>
+
+		<article class="panel insight-panel">
+			<span class="insight-mark"><mat-icon>auto_awesome</mat-icon></span>
+			<p class="panel-kicker">INSIGHT DO DIA</p>
+			<h2>Seu melhor horário de vendas é entre 14h e 17h.</h2>
+			<p class="insight-copy">As conversões sobem <strong>23%</strong> nesse intervalo. Considere concentrar suas campanhas nesse período.</p>
+			<button mat-button class="insight-action">Ver análise completa <mat-icon>arrow_forward</mat-icon></button>
+		</article>
+	</section>
+</main>

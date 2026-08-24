@@ -1,0 +1,41 @@
+<mat-toolbar>
+  <a href="/user">
+    <span>angular-springboot-crud</span>
+  </a>
+
+  <span class="example-spacer"></span>
+
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="profileMenu"
+    aria-label="Abrir menu do usuário"
+  >
+    <mat-icon>account_circle</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-menu #profileMenu="matMenu" class="profile-menu">
+  <div class="profile-summary" role="group" aria-label="Dados do usuário">
+    <strong>{{ username }}</strong>
+    <span>{{ email }}</span>
+  </div>
+
+  <mat-divider />
+
+  <button mat-menu-item routerLink="/user/dashboard">
+    <mat-icon>dashboard</mat-icon>
+    <span>Dashboard</span>
+  </button>
+
+  <button mat-menu-item routerLink="/user/config-account">
+    <mat-icon>settings</mat-icon>
+    <span>Configurar a conta</span>
+  </button>
+
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Sair</span>
+  </button>
+</mat-menu>
+
+<router-outlet />
