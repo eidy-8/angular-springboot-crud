@@ -41,6 +41,15 @@ public class UserService {
     	return toResponse(user);
     }
     
+    public UserResponse findByEmail(String email) {
+
+        User user = repository
+                .findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        return toResponse(user);
+    }
+    
     public UserResponse create(CreateUserRequest request) {
 
         if (repository.existsByEmail(request.getEmail())) {

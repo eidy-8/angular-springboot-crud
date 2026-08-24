@@ -10,6 +10,8 @@ import com.eidy_8.server.dtos.LoginRequest;
 import com.eidy_8.server.dtos.LoginResponse;
 import com.eidy_8.server.services.AuthService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -21,7 +23,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+	public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 		
 		return ResponseEntity.ok(authService.login(request));
 	}

@@ -1,9 +1,16 @@
 package com.eidy_8.server.dtos;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class LoginRequest {
 
-	public String email;
-	private String password;
+	@NotBlank
+    @Email
+    private String email;
+
+    @NotBlank
+    private String password;
 	
 	public String getEmail() {
 		return email;
