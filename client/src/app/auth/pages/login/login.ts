@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { merge, Subject, takeUntil } from 'rxjs';
 import { ApiData } from '../../services/api-data';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,12 +19,14 @@ export class Login {
 
   private unsubscribe = new Subject<void>();
 
+  protected loginError = false;
+
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', Validators.required)
   });
   
-  constructor(public apiData: ApiData) {
+  constructor(public apiData: ApiData, private router: Router) {
     merge(this.email.statusChanges, this.email.valueChanges)
     .pipe(takeUntilDestroyed())
     .subscribe(() => this.updateEmailErrorMessage());
@@ -33,8 +36,8 @@ export class Login {
     .subscribe(() => this.updatePasswordErrorMessage());
   }
 
-  readonly email = new FormControl('', [Validators.required, Validators.email]);
-  readonly password = new FormControl('', [Validators.required]);
+  readonly email = this.loginForm.controls.email;
+  readonly password = this.loginForm.controls.password;
 
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
@@ -50,16 +53,14 @@ export class Login {
       return;
     }
 
-    // this.apiData.postLogin(this.loginForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
-    //   next: res => {
-    //     sessionStorage.setItem("Session-Token", res.access_token);
-    //     this.router.navigate(['user']);
-    //   },
-    //   error: error => {
-    //     this.alertMessage = error.message;
-    //     this.cdr.detectChanges();
-    //   }
-    // });
+    this.apiData.postLogin(this.loginForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
+      next: () => {
+        this.router.navigate(['user']);
+      },
+      error: () => {
+        this.loginError = true;
+      }
+    });
   }
   
   updateEmailErrorMessage() {

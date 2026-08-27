@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { merge, Subject } from 'rxjs';
+import { merge, Subject, takeUntil } from 'rxjs';
 import { ApiData } from '../../../auth/services/api-data';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,14 +17,22 @@ import { User } from '../../services/user';
 })
 export class ConfigAccount {
 
+  alertMessage: string | null = null;
+
+  successAlertMessage: string | null = null;
+
   private unsubscribe = new Subject<void>();
 
+  protected userId!: string;
+  protected userName!: string; 
+  protected userEmail!: string;
+
   updateForm = new FormGroup({
-    username: new FormControl('', Validators.required),
+    name: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email])
   });
   
-  constructor(public apiData: ApiData, public user: User) {
+  constructor(public apiData: ApiData, public user: User, public apidata: ApiData, private cdr: ChangeDetectorRef) {
     merge(this.username.statusChanges, this.username.valueChanges)
     .pipe(takeUntilDestroyed())
     .subscribe(() => this.updateUsernameErrorMessage());
@@ -34,14 +42,40 @@ export class ConfigAccount {
     .subscribe(() => this.updateEmailErrorMessage());
   }
 
-  readonly username = new FormControl('', [Validators.required]);
-  readonly email = new FormControl('', [Validators.required, Validators.email]);
+  ngOnInit(): void {
+    this.getUserInfo();
+  }
+
+  protected getUserInfo() {
+
+    this.apidata.verifyToken()
+    .pipe(
+      takeUntil(this.unsubscribe)
+    ).subscribe({
+      next: res => {        
+        this.userId = res.id;
+        this.userName = res.name;
+        this.userEmail = res.email;
+
+        this.updateForm.patchValue({
+          name: res.name,
+          email: res.email
+        });
+
+      },
+      error: () => {
+      }
+    });
+  };
+
+  readonly username = this.updateForm.controls.name;
+  readonly email = this.updateForm.controls.email;
 
   usernameErrorMessage = signal('');
   emailErrorMessage = signal('');
 
   protected update(): void {    
-    if (!this.updateForm.value.username) {
+    if (!this.updateForm.value.name) {
       this.updateUsernameErrorMessage();
       return;
     }
@@ -51,17 +85,17 @@ export class ConfigAccount {
       return;
     }
 
-    // this.user.update(this.userId, this.userForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
-    //   next: () => {
-    //     this.successAlertMessage = 'Usuário atualizado com sucesso'
-    //     this.alertMessage = null;
-    //     this.cdr.detectChanges();
-    //   },
-    //   error: error => {
-    //     this.alertMessage = error.message;
-    //     this.cdr.detectChanges();
-    //   }
-    // });
+    this.user.update(this.userId, this.updateForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
+      next: () => {
+        this.successAlertMessage = 'Usuário atualizado com sucesso'
+        this.alertMessage = null;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.alertMessage = error.message;
+        this.cdr.detectChanges();
+      }
+    });
   }
   
   updateUsernameErrorMessage() {

@@ -46,8 +46,12 @@
                 <mat-error>{{passwordErrorMessage()}}</mat-error>
                 }
             </mat-form-field>
+
+            @if (alertMessage) {
+                <p class="alert">{{ alertMessage }}</p>
+            }
     
-            <button type="submit" matButton="filled">Entrar</button>
+            <button type="submit" matButton="filled">Criar conta</button>
         </form>
 
     </mat-card>

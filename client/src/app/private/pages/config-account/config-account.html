@@ -32,6 +32,14 @@
                 <mat-error>{{emailErrorMessage()}}</mat-error>
                 }
             </mat-form-field>
+
+            @if (alertMessage) {
+                <p class="alert">{{ alertMessage }}</p>
+            }
+
+            @if (successAlertMessage) {
+                <p class="success">{{ successAlertMessage }}</p>
+            }
     
             <button type="submit" matButton="filled">Alterar</button>
         </form>

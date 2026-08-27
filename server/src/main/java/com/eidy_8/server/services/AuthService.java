@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import com.eidy_8.server.dtos.LoginRequest;
-import com.eidy_8.server.dtos.LoginResponse;
 
 @Service
 public class AuthService {
@@ -24,7 +23,7 @@ public class AuthService {
 		this.jwtEncoder = jwtEncoder;
 	}
 	
-	public LoginResponse login(LoginRequest request) {
+	public String login(LoginRequest request) {
 		
 		Authentication authentication = 
 				authenticationManager.authenticate(
@@ -46,6 +45,6 @@ public class AuthService {
 				.encode(JwtEncoderParameters.from(claims))
 				.getTokenValue();
 		
-		return new LoginResponse(token);
+		return token;
 	}
 }

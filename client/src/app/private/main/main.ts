@@ -5,6 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Auth } from '../../auth/services/auth';
+import { Subject, takeUntil } from 'rxjs';
+import { ApiData } from '../../auth/services/api-data';
 
 @Component({
   selector: 'app-main',
@@ -13,17 +16,41 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   styleUrl: './main.css',
 })
 export class Main {
-  private readonly router = inject(Router, { optional: true });
 
-  readonly username = sessionStorage.getItem('Session-Username')
-    ?? sessionStorage.getItem('username')
-    ?? 'Usuário';
-  readonly email = sessionStorage.getItem('Session-Email')
-    ?? sessionStorage.getItem('email')
-    ?? 'E-mail não informado';
+  protected unsubscribe = new Subject<void>();
+
+  protected userName!: string; 
+  protected userEmail!: string;
+
+  constructor(private auth: Auth, private router: Router, public apidata: ApiData) {}
+
+  ngOnInit(): void {
+    this.getUserInfo();
+  }
+
+  protected getUserInfo() {
+
+    this.apidata.verifyToken()
+    .pipe(
+      takeUntil(this.unsubscribe)
+    ).subscribe({
+      next: res => {
+        this.userName = res.name;
+        this.userEmail = res.email;
+      },
+      error: () => {
+      }
+    });
+  };
 
   logout(): void {
-    sessionStorage.clear();
-    void this.router?.navigate(['/auth/login']);
+    this.auth.logout()
+    
+    this.router.navigate(['/']);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ApiData } from '../../../auth/services/api-data';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Metric {
   label: string;
@@ -25,7 +27,33 @@ interface Activity {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
+
+  protected unsubscribe = new Subject<void>();
+
+  protected userName!: string; 
+
+  constructor(public apidata: ApiData, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.getUserInfo();
+  }
+
+  protected getUserInfo() {
+
+    this.apidata.verifyToken()
+    .pipe(
+      takeUntil(this.unsubscribe)
+    ).subscribe({
+      next: res => {
+        this.userName = res.name;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+      }
+    });
+  };
+
   readonly metrics: Metric[] = [
     { label: 'Receita total', value: 'R$ 48.290', change: '+12,8%', trend: 'up', icon: 'payments', tone: 'mint' },
     { label: 'Novos clientes', value: '1.284', change: '+8,4%', trend: 'up', icon: 'group_add', tone: 'coral' },
@@ -45,4 +73,9 @@ export class Dashboard {
     { initials: 'AS', name: 'Ana Souza', action: 'atualizou o cadastro', time: 'há 1 h', tone: 'mint' },
     { initials: 'GB', name: 'Guilherme Barros', action: 'solicitou suporte', time: 'há 2 h', tone: 'gold' },
   ];
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
 }

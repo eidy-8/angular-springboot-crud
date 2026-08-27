@@ -33,6 +33,10 @@
                 <mat-error>{{passwordErrorMessage()}}</mat-error>
                 }
             </mat-form-field>
+
+            @if (loginError) {
+                <p>Erro ao realizar o login.</p>
+            }
     
             <button type="submit" matButton="filled">Entrar</button>
         </form>

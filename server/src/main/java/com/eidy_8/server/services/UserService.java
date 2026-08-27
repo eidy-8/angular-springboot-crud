@@ -78,9 +78,12 @@ public class UserService {
     	user.setEmail(request.getEmail());
     	user.setName(request.getName());
     	
-    	User updateUser = repository.save(user);
-    	
-    	return toResponse(updateUser);
+        repository.saveAndFlush(user);
+
+        User updatedUser = repository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        return toResponse(updatedUser);
     }
     
     public void deleteById(UUID id) {

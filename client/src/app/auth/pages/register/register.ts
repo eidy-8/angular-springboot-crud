@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { merge, Subject } from 'rxjs';
+import { merge, Subject, takeUntil } from 'rxjs';
 import { ApiData } from '../../services/api-data';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -16,15 +17,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class Register {
 
+  alertMessage: string | null = null;
+
   private unsubscribe = new Subject<void>();
 
   registerForm = new FormGroup({
-    username: new FormControl('', Validators.required),
+    name: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', Validators.required)
   });
   
-  constructor(public apiData: ApiData) {
+  constructor(public apiData: ApiData, private router: Router, private cdr: ChangeDetectorRef) {
     merge(this.username.statusChanges, this.username.valueChanges)
     .pipe(takeUntilDestroyed())
     .subscribe(() => this.updateUsernameErrorMessage());
@@ -38,16 +41,16 @@ export class Register {
     .subscribe(() => this.updatePasswordErrorMessage());
   }
 
-  readonly username = new FormControl('', [Validators.required]);
-  readonly email = new FormControl('', [Validators.required, Validators.email]);
-  readonly password = new FormControl('', [Validators.required]);
+  readonly username = this.registerForm.controls.name;
+  readonly email = this.registerForm.controls.email;
+  readonly password = this.registerForm.controls.password;
 
   usernameErrorMessage = signal('');
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
 
   protected register(): void {   
-    if (!this.registerForm.value.username) {
+    if (!this.registerForm.value.name) {
       this.updateUsernameErrorMessage();
       return;
     }
@@ -62,15 +65,15 @@ export class Register {
       return;
     }
 
-    // this.apiData.postUser(this.registerForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
-    //   next: () => {
-    //     this.router.navigate(['auth/login']);
-    //   },
-    //   error: error => {
-    //     this.alertMessage = error.message;
-    //     this.cdr.detectChanges();
-    //   }
-    // });
+    this.apiData.postUser(this.registerForm.value).pipe( takeUntil( this.unsubscribe ) ).subscribe({
+      next: () => {
+        this.router.navigate(['auth/login']);
+      },
+      error: error => {
+        this.alertMessage = error.message;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   updateUsernameErrorMessage() {
